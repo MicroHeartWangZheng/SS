@@ -17,6 +17,7 @@ var connectionStrings = new string[]
     "host=mysql;User Id=root;password=43e50a5f3d554f46846cf0c5681e3d34;Database=Basic;CharSet=utf8mb4;"
 };
 
+#region SqlSugarScope 使用，每次请求 EventId 值固定不变
 
 var serviceProvider = builder.Services.BuildServiceProvider();
 foreach (var connectionString in connectionStrings)
@@ -35,7 +36,8 @@ foreach (var connectionString in connectionStrings)
         //eventIdProvider.EventId 值固定不变， 因为SqlSugarScope不能传委托参数serviceProvider
         logger.LogInformation($"{eventIdProvider.EventId}  sql:{sql} paras:{JsonConvert.SerializeObject(paras)}");
     }));
-}
+} 
+#endregion
 
 
 #region SqlSugarClient 使用 没问题
