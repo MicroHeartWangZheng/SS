@@ -21,14 +21,12 @@ namespace SS.Demo
         {
             if (context.Exception != null || context.Result is Microsoft.AspNetCore.Mvc.FileStreamResult)
                 return;
-            logger.LogInformation($"请求返回： EventId:{eventIdProvider.EventId} \r\n {JsonConvert.SerializeObject(context.Result)}");
+            logger.LogInformation($"返回： EventId:{eventIdProvider.EventId}");
         }
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            logger.LogInformation($"请求地址：EventId:{eventIdProvider.EventId} \r\n {context.HttpContext.Request.Path} \r\n" +
-                                                     $"请求方式：{context.HttpContext.Request.Method} \r\n" +
-                                                     $"请求参数：{JsonConvert.SerializeObject(context.ActionArguments.Values)}");
+            logger.LogInformation($"请求：EventId:{eventIdProvider.EventId}");
         }
     }
 }

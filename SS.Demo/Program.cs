@@ -22,21 +22,22 @@ var connectionStrings = new string[]
 var serviceProvider = builder.Services.BuildServiceProvider();
 foreach (var connectionString in connectionStrings)
 {
-    builder.Services.AddSingleton<ISqlSugarClient>(new SqlSugarScope(new ConnectionConfig()
+    var config =new ConnectionConfig()
     {
         DbType = DbType.MySql,
         ConnectionString = connectionString,
         IsAutoCloseConnection = true,
         ConfigId = connectionString.Contains("Model") ? "Model" : "Basic"
-    },
+    };
+    builder.Services.AddSingleton<ISqlSugarClient>(new SqlSugarScope(config,
     db => db.Aop.OnLogExecuted = (sql, paras) =>
     {
         var logger = serviceProvider.GetService<ILogger<SqlSugarScope>>();
         var eventIdProvider = serviceProvider.GetService<EventIdProvider>();
         //eventIdProvider.EventId 值固定不变， 因为SqlSugarScope不能传委托参数serviceProvider
-        logger.LogInformation($"{eventIdProvider.EventId}  sql:{sql} paras:{JsonConvert.SerializeObject(paras)}");
+        logger.LogInformation($"执行SQL时的 EventId：{eventIdProvider.EventId}");
     }));
-} 
+}
 #endregion
 
 
@@ -54,7 +55,7 @@ foreach (var connectionString in connectionStrings)
 //    {
 //        var logger = serviceProvider.GetService<ILogger<SqlSugarClient>>();
 //        var eventIdProvider = serviceProvider.GetService<EventIdProvider>();
-//        logger.LogInformation($"执行了SQL：EventId:{eventIdProvider.EventId} \r\n sql:{sql} paras:{JsonConvert.SerializeObject(paras)}");
+//        logger.LogInformation($"执行SQL时的 EventId：{eventIdProvider.EventId}");
 //    }));
 //} 
 #endregion

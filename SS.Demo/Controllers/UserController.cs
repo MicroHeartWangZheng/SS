@@ -16,28 +16,21 @@ namespace SS.Demo.Controllers
 
         private readonly EventIdProvider eventIdProvider;
 
-        public UserController(ILogger<UserController> logger, IEnumerable<ISqlSugarClient> sqlSugarClients, EventIdProvider eventIdProvider)
+        public UserController(ILogger<UserController> logger, ISqlSugarClient sqlSugarClients, EventIdProvider eventIdProvider)
         {
             this.logger = logger;
-            this.modelClient = sqlSugarClients.FirstOrDefault(x => x.CurrentConnectionConfig.ConfigId == "Model");
-            this.basicClient = sqlSugarClients.FirstOrDefault(x => x.CurrentConnectionConfig.ConfigId == "Basic");
+            //this.modelClient = sqlSugarClients.AsTenant().GetConnection("Model");
+            this.basicClient = sqlSugarClients.AsTenant().GetConnection("Basic");
             this.eventIdProvider = eventIdProvider;
         }
 
         [HttpGet]
-        public async Task<List<UserEntity>> GetUserListAsync()
+        public async Task GetUserListAsync()
         {
-            logger.LogInformation($"请求了接口GetUserListAsync EventId:{eventIdProvider.EventId}");
-            var a = await basicClient.Queryable<IkWordEntity>().ToListAsync();
-            return await modelClient.Queryable<UserEntity>().ToListAsync();
+            logger.LogInformation($"请求接口时的 EventId:{eventIdProvider.EventId}");
+            await basicClient.Queryable<IkWordEntity>().ToListAsync();
+            //await modelClient.Queryable<UserEntity>().ToListAsync();
         }
 
-
-        [HttpGet("Basic")]
-        public async Task<List<IkWordEntity>> GetBasicListAsync()
-        {
-            logger.LogInformation($"请求了接口GetBasicListAsync EventId:{eventIdProvider.EventId}");
-            return await basicClient.Queryable<IkWordEntity>().ToListAsync();
-        }
     }
 }
